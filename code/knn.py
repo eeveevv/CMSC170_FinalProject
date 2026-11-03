@@ -178,7 +178,3 @@ print(f"K = {K_VALUE}, P = {P_VALUE}")
 closest = compute_closest_matches(tune_x, train_x, train_y)
 mae, rmse, r_squared, mape = evaluate(tune_y, predict(closest))
 print(f"tune | MAE: {mae:.3f}  RMSE: {rmse:.3f}  R2: {r_squared:.3f}  MAPE: {mape:.2f}%")
-
-closest = compute_closest_matches(test_x, train_x, train_y)
-mae, rmse, r_squared, mape = evaluate(test_y, predict(closest))
-print(f"test | MAE: {mae:.3f}  RMSE: {rmse:.3f}  R2: {r_squared:.3f}  MAPE: {mape:.2f}%")
