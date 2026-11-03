@@ -1,5 +1,6 @@
 import csv
 import math
+import numpy as np
  
 K_VALUE = 7
 P_VALUE = 2
@@ -121,4 +122,22 @@ def predict(closest_matches):
         predictions.append(total / K_VALUE)
  
     return predictions
- 
+
+def evaluate(actual, predicted):
+    n = len(actual)
+
+    abs_total = 0
+    sq_total = 0
+    for i in range(n):
+        error = actual[i] - predicted[i]
+        abs_total += abs(error)
+        sq_total += error ** 2
+
+    mae = abs_total / n
+    mse = sq_total / n
+    rmse = math.sqrt(mse)
+
+    return mae, rmse
+
+# reference: https://discovery.cs.illinois.edu/guides/Statistics-with-Python/rmse/ 
+#            https://www.geeksforgeeks.org/python/how-to-calculate-mean-absolute-error-in-python/
