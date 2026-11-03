@@ -126,18 +126,26 @@ def predict(closest_matches):
 def evaluate(actual, predicted):
     n = len(actual)
 
+    ape = []
+
     abs_total = 0
     sq_total = 0
     for i in range(n):
         error = actual[i] - predicted[i]
         abs_total += abs(error)
         sq_total += error ** 2
+        per_err = abs(error / actual[i])
+        ape.append(per_err)
 
     mae = abs_total / n
     mse = sq_total / n
     rmse = math.sqrt(mse)
+    r_squared = 1 - (sq_total / (np.sum((actual - predicted)**2)))
+    mape = sum(ape) / len(ape)
 
-    return mae, rmse
+    return mae, rmse, r_squared, mape
+
 
 # reference: https://discovery.cs.illinois.edu/guides/Statistics-with-Python/rmse/ 
 #            https://www.geeksforgeeks.org/python/how-to-calculate-mean-absolute-error-in-python/
+#            https://www.geeksforgeeks.org/python/how-to-calculate-mape-in-python/
