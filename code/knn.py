@@ -4,45 +4,43 @@ import numpy as np
 
 P_VALUE = 2
  
-TRAIN_PATH = "../dataset/processed_train.csv"
-TUNE_PATH = "../dataset/processed_tune.csv"
-TEST_PATH = "../dataset/processed_test.csv"
+# TRAIN_PATH = "../dataset/processed_train.csv"
+# TUNE_PATH = "../dataset/processed_tune.csv"
+# TEST_PATH = "../dataset/processed_test.csv"
+ 
+# def reader(path):
+#     # columns
+#         # month
+#         # national average change percent = change in the average price from two months ago to last month
+#         # last month price gap = specific to each province, how much far (in peso) the price of the rice is from the national average
+#         # last month = national average price last month
+#         # 2 month = national average price 2 months ago
+#         # 3 month = national average price 3 months ago
 
+#     dataset = []
+#     with open(path, mode='r', encoding='utf-8-sig') as file:
+#         csv_reader = csv.reader(file)
  
+#         for row in csv_reader:
+#             point = []
+#             for value in row:
+#                 point.append(float(value))
+#             dataset.append(point)
  
-def reader(path):
-    # columns
-        # month
-        # national average change percent = change in the average price from two months ago to last month
-        # last month price gap = specific to each province, how much far (in peso) the price of the rice is from the national average
-        # last month = national average price last month
-        # 2 month = national average price 2 months ago
-        # 3 month = national average price 3 months ago
-
-    dataset = []
-    with open(path, mode='r', encoding='utf-8-sig') as file:
-        csv_reader = csv.reader(file)
- 
-        for row in csv_reader:
-            point = []
-            for value in row:
-                point.append(float(value))
-            dataset.append(point)
- 
-    return dataset
+#     return dataset
 
 def compute_K(train_x):
     return(round(math.sqrt(len(train_x))))
 
-def group_dataset(dataset):
-    features = []
-    prices = []
+# def group_dataset(dataset):
+#     features = []
+#     prices = []
  
-    for line in dataset:
-        features.append(line[0:6]) # the first 6 columns
-        prices.append(line[6]) # price (last column)
+#     for line in dataset:
+#         features.append(line[0:6]) # the first 6 columns
+#         prices.append(line[6]) # price (last column)
  
-    return features, prices
+#     return features, prices
  
 
 # makes the features comparable 
@@ -124,36 +122,36 @@ def predict(closest_matches, k):
  
     return predictions
 
-def evaluate(actual, predicted):
-    n = len(actual)
+# def evaluate(actual, predicted):
+#     n = len(actual)
 
-    ape = []
+#     ape = []
 
-    abs_total = 0
-    sq_total = 0
-    for i in range(n):
-        error = actual[i] - predicted[i]
-        abs_total += abs(error)
-        sq_total += error ** 2
-        per_err = abs(error / actual[i])
-        ape.append(per_err)
+#     abs_total = 0
+#     sq_total = 0
+#     for i in range(n):
+#         error = actual[i] - predicted[i]
+#         abs_total += abs(error)
+#         sq_total += error ** 2
+#         per_err = abs(error / actual[i])
+#         ape.append(per_err)
 
-    mean_actual = 0
-    for i in range(n):
-        mean_actual += actual[i]
-    mean_actual = mean_actual / n
+#     mean_actual = 0
+#     for i in range(n):
+#         mean_actual += actual[i]
+#     mean_actual = mean_actual / n
 
-    total_variation = 0
-    for i in range(n):
-        total_variation += (actual[i] - mean_actual) **2
+#     total_variation = 0
+#     for i in range(n):
+#         total_variation += (actual[i] - mean_actual) **2
 
-    mae = abs_total / n
-    mse = sq_total / n
-    rmse = math.sqrt(mse)
-    r_squared = 1 - (sq_total / total_variation)
-    mape = sum(ape) / len(ape) * 100
+#     mae = abs_total / n
+#     mse = sq_total / n
+#     rmse = math.sqrt(mse)
+#     r_squared = 1 - (sq_total / total_variation)
+#     mape = sum(ape) / len(ape) * 100
 
-    return mae, rmse, r_squared, mape
+#     return mae, rmse, r_squared, mape
 
 
 # reference: https://discovery.cs.illinois.edu/guides/Statistics-with-Python/rmse/ 
@@ -161,21 +159,39 @@ def evaluate(actual, predicted):
 #            https://www.geeksforgeeks.org/python/how-to-calculate-mape-in-python/
 
 
-train = reader(TRAIN_PATH)
-tune = reader(TUNE_PATH)
-test = reader(TEST_PATH)
+# train = reader(TRAIN_PATH)
+# tune = reader(TUNE_PATH)
+# test = reader(TEST_PATH)
 
-train_x, train_y = group_dataset(train)
-tune_x, tune_y = group_dataset(tune)
-test_x, test_y = group_dataset(test)
+# train_x, train_y = group_dataset(train)
+# tune_x, tune_y = group_dataset(tune)
+# test_x, test_y = group_dataset(test)
 
-means, stds = compute_scaling(train_x)
-train_x = scale(train_x, means, stds)
-tune_x = scale(tune_x, means, stds)
-test_x = scale(test_x, means, stds)
+# means, stds = compute_scaling(train_x)
+# train_x = scale(train_x, means, stds)
+# tune_x = scale(tune_x, means, stds)
+# test_x = scale(test_x, means, stds)
 
-print(f"K = {compute_K(train_x)}, P = {P_VALUE}")
+# print(f"K = {compute_K(train_x)}, P = {P_VALUE}")
 
-closest = compute_closest_matches(tune_x, train_x, train_y, compute_K(train_x))
-mae, rmse, r_squared, mape = evaluate(tune_y, predict(closest, compute_K(train_x)))
-print(f"tune | MAE: {mae:.3f}  RMSE: {rmse:.3f}  R2: {r_squared:.3f}  MAPE: {mape:.2f}%")
+# closest = compute_closest_matches(tune_x, train_x, train_y, compute_K(train_x))
+# mae, rmse, r_squared, mape = evaluate(tune_y, predict(closest, compute_K(train_x)))
+# print(f"tune | MAE: {mae:.3f}  RMSE: {rmse:.3f}  R2: {r_squared:.3f}  MAPE: {mape:.2f}%")
+
+def run(train_x, train_y, test_x, k=None, p=2):
+    global P_VALUE
+    P_VALUE = p
+ 
+    train_x = train_x.tolist()
+    test_x = test_x.tolist()
+    train_y = train_y.tolist()
+ 
+    if k is None:
+        k = compute_K(train_x)
+ 
+    means, stds = compute_scaling(train_x)
+    train_x = scale(train_x, means, stds)
+    test_x = scale(test_x, means, stds)
+ 
+    closest = compute_closest_matches(test_x, train_x, train_y, k)
+    return predict(closest, k)
