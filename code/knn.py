@@ -2,13 +2,12 @@ import csv
 import math
 import numpy as np
 
- 
-K_VALUE = 7
 P_VALUE = 2
  
 TRAIN_PATH = "../dataset/processed_train.csv"
 TUNE_PATH = "../dataset/processed_tune.csv"
 TEST_PATH = "../dataset/processed_test.csv"
+
  
  
 def reader(path):
@@ -31,8 +30,10 @@ def reader(path):
             dataset.append(point)
  
     return dataset
- 
- 
+
+def compute_K(train_x):
+    return(round(math.sqrt(len(train_x))))
+
 def group_dataset(dataset):
     features = []
     prices = []
@@ -86,7 +87,7 @@ def get_distance(item):
     return item[0]
  
  
-def compute_closest_matches(test_x, train_x, train_y):
+def compute_closest_matches(test_x, train_x, train_y, k):
     closest_matches = []
  
     # loop through each test case
@@ -106,12 +107,12 @@ def compute_closest_matches(test_x, train_x, train_y):
  
         # sort the instances, then keep the K closest
         distances.sort(key=get_distance)
-        closest_matches.append(distances[:K_VALUE])
+        closest_matches.append(distances[:k])
  
     return closest_matches
  
  
-def predict(closest_matches):
+def predict(closest_matches, k):
     # average the price of the K closest train cases
     predictions = []
  
@@ -119,7 +120,7 @@ def predict(closest_matches):
         total = 0
         for neighbor in neighbors:
             total += neighbor[1]
-        predictions.append(total / K_VALUE)
+        predictions.append(total / k)
  
     return predictions
 
@@ -173,8 +174,8 @@ train_x = scale(train_x, means, stds)
 tune_x = scale(tune_x, means, stds)
 test_x = scale(test_x, means, stds)
 
-print(f"K = {K_VALUE}, P = {P_VALUE}")
+print(f"K = {compute_K(train_x)}, P = {P_VALUE}")
 
-closest = compute_closest_matches(tune_x, train_x, train_y)
-mae, rmse, r_squared, mape = evaluate(tune_y, predict(closest))
+closest = compute_closest_matches(tune_x, train_x, train_y, compute_K(train_x))
+mae, rmse, r_squared, mape = evaluate(tune_y, predict(closest, compute_K(train_x)))
 print(f"tune | MAE: {mae:.3f}  RMSE: {rmse:.3f}  R2: {r_squared:.3f}  MAPE: {mape:.2f}%")
