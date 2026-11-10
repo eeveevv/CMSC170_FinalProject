@@ -1,6 +1,7 @@
 import csv
 import math
 import numpy as np
+
  
 K_VALUE = 7
 P_VALUE = 2
@@ -22,7 +23,6 @@ def reader(path):
     dataset = []
     with open(path, mode='r', encoding='utf-8-sig') as file:
         csv_reader = csv.reader(file)
-        next(csv_reader)  # skip the header row
  
         for row in csv_reader:
             point = []
