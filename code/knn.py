@@ -2,13 +2,20 @@ import csv
 import math
 import numpy as np
 
-P_VALUE = 2
+import EvaluationMetrics as em
+
+P_VALUE = 1
  
 TRAIN_PATH = "../dataset/processed_train.csv"
 TUNE_PATH = "../dataset/processed_tune.csv"
-TEST_PATH = "../dataset/processed_test.csv"
 
- 
+WFP_PATH = "../dataset/wfp_food_prices_phl.csv" 
+
+PROVINCES = ['Metropolitan Manila', 'Nueva Ecija', 'Iloilo', 'South Cotabato', 'Basilan', 'Maguindanao', 'Ifugao', 'Kalinga', 'Ilocos Norte', 'Ilocos Sur', 'Cagayan', 'Isabela',
+ 'Quirino', 'Bataan', 'Bulacan', 'Batangas', 'Cavite', 'Laguna', 'Quezon', 'Rizal', 'Marinduque', 'Occidental Mindoro', 'Oriental Mindoro', 'Palawan', 'Romblon', 'Zamboanga del Sur',
+ 'Albay', 'Catanduanes', 'Masbate', 'Sorsogon', 'Aklan', 'Guimaras', 'Negros Occidental', 'Bohol', 'Siquijor', 'Biliran', 'Leyte', 'Northern Samar', 'Samar', 'Southern Leyte', 'Bukidnon',
+ 'Camiguin', 'Lanao del Norte', 'Misamis Occidental', 'Misamis Oriental', 'Davao Oriental', 'Davao del Norte', 'North Cotabato', 'Sarangani', 'Agusan del Norte', 'Surigao del Norte',
+ 'Surigao del Sur']
  
 def reader(path):
     # columns
@@ -31,6 +38,10 @@ def reader(path):
  
     return dataset
 
+# [1]A. Kumar, “KNN Algorithm: When? Why? How? - TDS Archive - Medium,” 
+# Medium, May 25, 2020. https://medium.com/data-science/knn-algorithm-what-
+# when-why-how-41405c16c36f (accessed Nov. 10, 2026).
+
 def compute_K(train_x):
     return(round(math.sqrt(len(train_x))))
 
@@ -47,6 +58,9 @@ def group_dataset(dataset):
 
 # makes the features comparable 
 # for each feature, their means and standard deviation is computed
+# [2]W. H. Khoong, “Why Scaling Your Data Is Important,” CodeX, Jan. 21, 2023. 
+# https://medium.com/codex/why-scaling-your-data-is-important-1aff95ca97a2 
+# (accessed Nov. 10, 2026).
 def compute_scaling(train_features):
     means = []
     stds = []
@@ -124,58 +138,28 @@ def predict(closest_matches, k):
  
     return predictions
 
-def evaluate(actual, predicted):
-    n = len(actual)
+def main():
+    train = reader(TRAIN_PATH)
+    tune = reader(TUNE_PATH)
 
-    ape = []
+    train_x, train_y = group_dataset(train)
+    tune_x, tune_y = group_dataset(tune)
 
-    abs_total = 0
-    sq_total = 0
-    for i in range(n):
-        error = actual[i] - predicted[i]
-        abs_total += abs(error)
-        sq_total += error ** 2
-        per_err = abs(error / actual[i])
-        ape.append(per_err)
+    k = compute_K(train_x)
 
-    mean_actual = 0
-    for i in range(n):
-        mean_actual += actual[i]
-    mean_actual = mean_actual / n
+    means, stds = compute_scaling(train_x)
+    train_x = scale(train_x, means, stds)
+    tune_x = scale(tune_x, means, stds)
 
-    total_variation = 0
-    for i in range(n):
-        total_variation += (actual[i] - mean_actual) **2
+    closest = compute_closest_matches(tune_x, train_x, train_y, k)
+    tune_pred = predict(closest, k)
 
-    mae = abs_total / n
-    mse = sq_total / n
-    rmse = math.sqrt(mse)
-    r_squared = 1 - (sq_total / total_variation)
-    mape = sum(ape) / len(ape) * 100
+    # EvaluationMetrics subtracts the arrays directly, so lists are converted first
+    actual = np.asarray(tune_y, dtype=float)
+    predicted = np.asarray(tune_pred, dtype=float)
 
-    return mae, rmse, r_squared, mape
+    print(f"K = {k}, P = {P_VALUE}")
+    print(f"tune | MAE: {em.mae(actual, predicted):.3f}  RMSE: {em.rmse(actual, predicted):.3f}  R2: {em.r_squared(actual, predicted):.3f}  MAPE: {em.mape(actual, predicted):.2f}%")
 
-
-# reference: https://discovery.cs.illinois.edu/guides/Statistics-with-Python/rmse/ 
-#            https://www.geeksforgeeks.org/python/how-to-calculate-mean-absolute-error-in-python/
-#            https://www.geeksforgeeks.org/python/how-to-calculate-mape-in-python/
-
-
-train = reader(TRAIN_PATH)
-tune = reader(TUNE_PATH)
-test = reader(TEST_PATH)
-
-train_x, train_y = group_dataset(train)
-tune_x, tune_y = group_dataset(tune)
-test_x, test_y = group_dataset(test)
-
-means, stds = compute_scaling(train_x)
-train_x = scale(train_x, means, stds)
-tune_x = scale(tune_x, means, stds)
-test_x = scale(test_x, means, stds)
-
-print(f"K = {compute_K(train_x)}, P = {P_VALUE}")
-
-closest = compute_closest_matches(tune_x, train_x, train_y, compute_K(train_x))
-mae, rmse, r_squared, mape = evaluate(tune_y, predict(closest, compute_K(train_x)))
-print(f"tune | MAE: {mae:.3f}  RMSE: {rmse:.3f}  R2: {r_squared:.3f}  MAPE: {mape:.2f}%")
+if __name__ == "__main__":
+    main()
