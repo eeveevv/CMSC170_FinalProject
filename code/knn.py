@@ -5,6 +5,8 @@ import numpy as np
 import EvaluationMetrics as em
 
 P_VALUE = 1
+K_MIN = 5
+K_MAX = 56
  
 TRAIN_PATH = "../dataset/processed_train.csv"
 TUNE_PATH = "../dataset/processed_tune.csv"
@@ -159,25 +161,33 @@ def main():
     train_x, train_y = group_dataset(train)
     tune_x, tune_y = group_dataset(tune)
 
-    tune_prediction = run(train_x, train_y, tune_x)
+    # tune_prediction = run(train_x, train_y, tune_x)
 
-    actual = np.asarray(tune_y, dtype=float)
-    predicted = np.asarray(tune_prediction, dtype=float)
-    k = compute_K(train_x)
+    # actual = np.asarray(tune_y, dtype=float)
+    # predicted = np.asarray(tune_prediction, dtype=float)
+    # k = compute_K(train_x)
 
     means, stds = compute_scaling(train_x)
     train_x = scale(train_x, means, stds)
     tune_x = scale(tune_x, means, stds)
 
-    closest = compute_closest_matches(tune_x, train_x, train_y, k)
-    tune_pred = predict(closest, k)
+    closest = compute_closest_matches(tune_x, train_x, train_y, K_MAX)
+    # tune_pred = predict(closest, k)
 
     # EvaluationMetrics subtracts the arrays directly, so lists are converted first
     actual = np.asarray(tune_y, dtype=float)
-    predicted = np.asarray(tune_pred, dtype=float)
+    # predicted = np.asarray(tune_pred, dtype=float)
 
-    print(f"K = {k}, P = {P_VALUE}")
-    print(f"tune | MAE: {em.mae(actual, predicted):.3f}  RMSE: {em.rmse(actual, predicted):.3f}  R2: {em.r_squared(actual, predicted):.3f}  MAPE: {em.mape(actual, predicted):.2f}%")
+
+    print(f"P = {P_VALUE}")
+    for k in range(K_MIN, K_MAX + 1):
+        k_closest = [neighbors[:k] for neighbors in closest]
+        predicted = np.asarray(predict(k_closest, k), dtype=float)
+
+        print(f"K = {k:>2} | tune | MAE: {em.mae(actual, predicted):.3f}  RMSE: {em.rmse(actual, predicted):.3f}  R2: {em.r_squared(actual, predicted):.3f}  MAPE: {em.mape(actual, predicted):.2f}%")
+
+    # print(f"K = {k}, P = {P_VALUE}")
+    # print(f"tune | MAE: {em.mae(actual, predicted):.3f}  RMSE: {em.rmse(actual, predicted):.3f}  R2: {em.r_squared(actual, predicted):.3f}  MAPE: {em.mape(actual, predicted):.2f}%")
 
 if __name__ == "__main__":
     main()
