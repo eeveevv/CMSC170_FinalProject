@@ -138,6 +138,20 @@ def predict(closest_matches, k):
  
     return predictions
 
+def run(train_x, train_y, test_x):
+    train_x = np.asarray(train_x, dtype=float).tolist()
+    train_y = np.asarray(train_y, dtype=float).tolist()
+    tune_x = np.asarray(train_x, dtype=float).tolist()
+
+    k = compute_K(train_x)
+
+    means, stds = compute_scaling(train_x)
+    train_x = scale(train_x, means, stds)
+    test_x = scale(test_x, means, stds)
+
+    closest = compute_closest_matches(test_x, train_x, train_y, k)
+    return np.array(predict(closest,k))
+
 def main():
     train = reader(TRAIN_PATH)
     tune = reader(TUNE_PATH)
@@ -145,6 +159,10 @@ def main():
     train_x, train_y = group_dataset(train)
     tune_x, tune_y = group_dataset(tune)
 
+    tune_prediction = run(train_x, train_y, tune_x)
+
+    actual = np.asarray(tune_y, dtype=float)
+    predicted = np.asarray(tune_prediction, dtype=float)
     k = compute_K(train_x)
 
     means, stds = compute_scaling(train_x)
