@@ -1,6 +1,7 @@
 import csv
 import math
 import numpy as np
+
  
 K_VALUE = 7
 P_VALUE = 2
@@ -22,7 +23,6 @@ def reader(path):
     dataset = []
     with open(path, mode='r', encoding='utf-8-sig') as file:
         csv_reader = csv.reader(file)
-        next(csv_reader)  # skip the header row
  
         for row in csv_reader:
             point = []
@@ -126,18 +126,55 @@ def predict(closest_matches):
 def evaluate(actual, predicted):
     n = len(actual)
 
+    ape = []
+
     abs_total = 0
     sq_total = 0
     for i in range(n):
         error = actual[i] - predicted[i]
         abs_total += abs(error)
         sq_total += error ** 2
+        per_err = abs(error / actual[i])
+        ape.append(per_err)
+
+    mean_actual = 0
+    for i in range(n):
+        mean_actual += actual[i]
+    mean_actual = mean_actual / n
+
+    total_variation = 0
+    for i in range(n):
+        total_variation += (actual[i] - mean_actual) **2
 
     mae = abs_total / n
     mse = sq_total / n
     rmse = math.sqrt(mse)
+    r_squared = 1 - (sq_total / total_variation)
+    mape = sum(ape) / len(ape) * 100
 
-    return mae, rmse
+    return mae, rmse, r_squared, mape
+
 
 # reference: https://discovery.cs.illinois.edu/guides/Statistics-with-Python/rmse/ 
 #            https://www.geeksforgeeks.org/python/how-to-calculate-mean-absolute-error-in-python/
+#            https://www.geeksforgeeks.org/python/how-to-calculate-mape-in-python/
+
+
+train = reader(TRAIN_PATH)
+tune = reader(TUNE_PATH)
+test = reader(TEST_PATH)
+
+train_x, train_y = group_dataset(train)
+tune_x, tune_y = group_dataset(tune)
+test_x, test_y = group_dataset(test)
+
+means, stds = compute_scaling(train_x)
+train_x = scale(train_x, means, stds)
+tune_x = scale(tune_x, means, stds)
+test_x = scale(test_x, means, stds)
+
+print(f"K = {K_VALUE}, P = {P_VALUE}")
+
+closest = compute_closest_matches(tune_x, train_x, train_y)
+mae, rmse, r_squared, mape = evaluate(tune_y, predict(closest))
+print(f"tune | MAE: {mae:.3f}  RMSE: {rmse:.3f}  R2: {r_squared:.3f}  MAPE: {mape:.2f}%")
