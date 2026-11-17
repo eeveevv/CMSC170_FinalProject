@@ -23,8 +23,8 @@ output_directory = "../docs/assets/"
 
 # hyperparameters of each method (update after tuning)
 ridge_lambda = 0 # updated to final tuned
-knn_k = 7
-knn_p = 2
+knn_k = 6
+knn_p = 1
 learning_rate = 0.01
 iterations = 3000
 
