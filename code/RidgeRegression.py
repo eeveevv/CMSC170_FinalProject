@@ -128,22 +128,8 @@ def predict(model, X):
 # print(f"R2:   	{em.r_squared(y_tune, y_pred):.4f}")
 
 # used by Comparison.py
-# final model from RidgeRegression.ipynb:
-# lamb = 0 (best from tuning), fit on training + validation data (2020-2025)
+# lamb = 0 (best from tuning in RidgeRegression.ipynb)
+# fit on the training data only (2020-2024), same as the other methods
 def run(train_x, train_y, test_x, lamb=0):
-    # load the validation set and add it below the training rows
-    tune_x = []
-    tune_y = []
-    with open('../dataset/processed_tune.csv', 'r') as f:
-        for row in csv.reader(f):
-            tune_x.append(row[:-1])
-            tune_y.append(row[-1])
-
-    tune_x = np.array(tune_x, dtype=np.float64)
-    tune_y = np.array(tune_y, dtype=np.float64)
-
-    final_x = np.vstack([train_x, tune_x])
-    final_y = np.concatenate([train_y, tune_y])
-
-    model = fit(lamb, final_x, final_y)
+    model = fit(lamb, train_x, train_y)
     return predict(model, test_x)
