@@ -6,10 +6,13 @@
 # add a run() in each method
 #   def run(train_x, train_y, test_x):
 
+import os
 import sys
 import csv
 import time
 import numpy as np
+import matplotlib
+matplotlib.use("Agg") # save graphs only, no window
 import matplotlib.pyplot as plt
 import EvaluationMetrics as em
 # import methods
@@ -20,6 +23,13 @@ import MultilevelPerceptron
 # needed directories
 input_directory = "../dataset/"
 output_directory = "../docs/assets/"
+
+# same 52 provinces used in Preprocessing.ipynb
+provinces = ['Metropolitan Manila', 'Nueva Ecija', 'Iloilo', 'South Cotabato', 'Basilan', 'Maguindanao', 'Ifugao', 'Kalinga', 'Ilocos Norte', 'Ilocos Sur', 'Cagayan', 'Isabela',
+ 'Quirino', 'Bataan', 'Bulacan', 'Batangas', 'Cavite', 'Laguna', 'Quezon', 'Rizal', 'Marinduque', 'Occidental Mindoro', 'Oriental Mindoro', 'Palawan', 'Romblon', 'Zamboanga del Sur',
+ 'Albay', 'Catanduanes', 'Masbate', 'Sorsogon', 'Aklan', 'Guimaras', 'Negros Occidental', 'Bohol', 'Siquijor', 'Biliran', 'Leyte', 'Northern Samar', 'Samar', 'Southern Leyte', 'Bukidnon',
+ 'Camiguin', 'Lanao del Norte', 'Misamis Occidental', 'Misamis Oriental', 'Davao Oriental', 'Davao del Norte', 'North Cotabato', 'Sarangani', 'Agusan del Norte', 'Surigao del Norte',
+ 'Surigao del Sur']
 
 # hyperparameters of each method (update after tuning)
 ridge_lambda = 0 # updated to final tuned
@@ -238,6 +248,56 @@ def plot_pred_vs_actual(results, eval_y, path, split):
     plt.savefig(path, dpi=150, bbox_inches="tight")
     plt.close()
 
+# graph 3: average retail rice price per month (2020 onwards)
+# shaded parts show the training, validation, and test periods
+def plot_price_trend(path):
+    # sum and count of prices per month, key is "YYYY-MM"
+    sums = {}
+    counts = {}
+
+    with open(input_directory + "wfp_food_prices_phl.csv", "r") as file:
+        reader = csv.reader(file)
+        next(reader) # skip header
+
+        for row in reader:
+            # skip the hxl tag row (#date, ...) if the file has one
+            if row[0].startswith("#"):
+                continue
+
+            # columns: 0 = date, 2 = province, 8 = commodity, 12 = pricetype, 14 = price
+            if row[8] != "Rice (regular, milled)" or row[12] != "Retail":
+                continue
+            if row[0][:4] < "2020" or row[2] not in provinces:
+                continue
+
+            month = row[0][:7]
+            sums[month] = sums.get(month, 0) + float(row[14])
+            counts[month] = counts.get(month, 0) + 1
+
+    # average of all markets in each month
+    months = sorted(sums.keys())
+    averages = np.array([sums[m] / counts[m] for m in months])
+    dates = np.array(months, dtype="datetime64[M]")
+
+    plt.figure(figsize=(8, 3.8))
+
+    # shade each period
+    plt.axvspan(np.datetime64("2020-05"), np.datetime64("2025-01"), color="tab:blue", alpha=0.08, label="Training (2020–2024)")
+    plt.axvspan(np.datetime64("2025-01"), np.datetime64("2026-01"), color="tab:orange", alpha=0.18, label="Validation (2025)")
+    plt.axvspan(np.datetime64("2026-01"), np.datetime64("2026-09"), color="tab:green", alpha=0.18, label="Test (Jan–Aug 2026)")
+
+    plt.plot(dates, averages, color="black", marker="o", markersize=3)
+
+    plt.ylabel("Average price (PHP/kg)")
+    plt.title("Average retail price of regular milled rice, 52 provinces")
+    plt.legend(loc="upper left", fontsize=8)
+
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close()
+
+    return months, averages
+
 def main():
     # test only if we type test
     #it validates by default since mas marami need ivalidate
@@ -278,6 +338,7 @@ def main():
     #save graphs
     plot_error(results, output_directory + "error_bars_" + split + ".png", split)
     plot_pred_vs_actual(results, eval_y, output_directory + "pred_vs_actual_" + split + ".png", split)
+    plot_price_trend(output_directory + "price_trend.png")
  
     print("Saved tables and graphs to " + output_directory)
  
