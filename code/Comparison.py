@@ -22,7 +22,7 @@ input_directory = "../dataset/"
 output_directory = "../docs/assets/"
 
 # hyperparameters of each method (update after tuning)
-ridge_lambda = 1
+ridge_lambda = 0 # updated to final tuned
 knn_k = 7
 knn_p = 2
 learning_rate = 0.01
@@ -84,7 +84,7 @@ def add_result(results, name, predictions, elapsed, eval_y):
     results[name]["pred"] = predictions
 
 # runs every method
-def run_all(train_x, train_y, eval_x, eval_y):
+def run_all(train_x, train_y, eval_x, eval_y, tune_x=None, tune_y=None):
     results = {}
     # baseline
     start = time.time()
