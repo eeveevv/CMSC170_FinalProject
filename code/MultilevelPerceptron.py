@@ -2,10 +2,10 @@ import numpy as np
 import csv
 
 
-def ReLU(layers):
+def ReLU(layers, leaky=0):
     if type(layers) == list:
         layers = np.array(layers, dtype=np.float64)
-    return np.where(layers < 0, 0, layers)
+    return np.where(layers < 0, layers * leaky, layers)
 
 
 def ReLUDerivative(layers):
@@ -16,7 +16,7 @@ def train(train_x, train_y, test_x, learning_rate=0.00001, iters=500000):
     input_size = train_x.shape[1]
     N = train_x.shape[0]
     batch_size = N
-    layer_sizes = [16, 16, 16] + [1]
+    layer_sizes = [32, 32, 32, 32, 32] + [1]
 
     # layer setup
     weights = [np.zeros((input_size, layer_sizes[0]), dtype=np.float64)]
@@ -64,8 +64,8 @@ def train(train_x, train_y, test_x, learning_rate=0.00001, iters=500000):
 
 
 def load_weights():
-    w = np.load("MLP_weights.npz")
-    b = np.load("MLP_biases.npz")
+    w = np.load("MLP_weights4.npz")
+    b = np.load("MLP_biases4.npz")
     weights = []
     biases = []
 
@@ -76,7 +76,14 @@ def load_weights():
     return weights, biases
 
 
-def run(train_x, train_y, test_x, train=False, layer_sizes=[16, 16, 16, 1], **kwargs):
+def run(
+    train_x,
+    train_y,
+    test_x,
+    train=False,
+    layer_sizes=[16, 16, 16] + [1],
+    **kwargs,
+):
     if train:
         weights, biases = train()
     else:
@@ -88,8 +95,9 @@ def run(train_x, train_y, test_x, train=False, layer_sizes=[16, 16, 16, 1], **kw
 
     # forward prop
     for i in range(len(layers) - 1):
+        # print(i)
         if i < len(layers) - 1:
-            layers[i + 1] = ReLU(layers[i].dot(weights[i]) + biases[i])
+            layers[i + 1] = ReLU(layers[i].dot(weights[i]) + biases[i], leaky=0)
         else:
             layers[i + 1] = layers[i].dot(weights[i]) + biases[i]
 
