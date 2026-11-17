@@ -84,32 +84,47 @@ def add_result(results, name, predictions, elapsed, eval_y):
     results[name]["pred"] = predictions
 
 # runs every method
-def run_all(train_x, train_y, eval_x, eval_y, tune_x=None, tune_y=None):
+def run_all(train_x, train_y, eval_x, eval_y, tune_x=None, tune_y=None, final_model=False):
     results = {}
+
     # baseline
     start = time.time()
     predictions = run_baseline(train_x, train_y, eval_x)
     elapsed = time.time() - start
     add_result(results, "Baseline", predictions, elapsed, eval_y)
- 
+
     # ridge regression
+    ridge_train_x = train_x
+    ridge_train_y = train_y
+
+    if final_model and tune_x is not None and tune_y is not None:
+        ridge_train_x = np.vstack([train_x, tune_x])
+        ridge_train_y = np.concatenate([train_y, tune_y])
+
     start = time.time()
-    predictions = RidgeRegression.run(train_x, train_y, eval_x, lamb=ridge_lambda)
+    predictions = RidgeRegression.run(ridge_train_x, ridge_train_y, eval_x, lamb=ridge_lambda)
     elapsed = time.time() - start
     add_result(results, "Ridge", predictions, elapsed, eval_y)
- 
+
     # knn
+    knn_train_x = train_x
+    knn_train_y = train_y
+
+    if final_model and tune_x is not None and tune_y is not None:
+        knn_train_x = np.vstack([train_x, tune_x])
+        knn_train_y = np.concatenate([train_y, tune_y])
+
     start = time.time()
-    predictions = knn.run(train_x, train_y, eval_x, k=knn_k, p=knn_p)
+    predictions = knn.run(knn_train_x, knn_train_y, eval_x, k=knn_k, p=knn_p)
     elapsed = time.time() - start
     add_result(results, "KNN", predictions, elapsed, eval_y)
- 
+
     # MLP
     start = time.time()
     predictions = MultilevelPerceptron.run(train_x, train_y, eval_x, learning_rate=learning_rate, iters=iterations)
     elapsed = time.time() - start
     add_result(results, "MLP", predictions, elapsed, eval_y)
- 
+
     return results
 
 # display results
@@ -245,7 +260,15 @@ def main():
         print("Scoring on the VALIDATION set (2025).")
  
     # run all methods and print the table
-    results = run_all(train_x, train_y, eval_x, eval_y)
+    results = run_all(
+        train_x,
+        train_y,
+        eval_x,
+        eval_y,
+        tune_x=tune_x,
+        tune_y=tune_y,
+        final_model=(split == "test")
+    )
  
     print_results(results)
     # save results
