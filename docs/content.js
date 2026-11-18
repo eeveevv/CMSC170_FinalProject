@@ -1,17 +1,17 @@
 const CONTENT = {
     title: "kAInan: Predicting Next Month Provincial Rice Prices in the Philippines with Ridge Regression, kNN, and MLP",
-    members: '<a href="#">Alyssa Kristelle Dela Cruz</a>, <a href="#">Avigail Ann A. Monsalud</a>, <a href="#">Natasha Lois S. Montas</a>, <a href="#">Rex Robert L. Roxas</a><br>',
+    members: 'Alyssa Kristelle Dela Cruz, Avigail Ann A. Monsalud, Natasha Lois S. Montas, Rex Robert L. Roxas<br>',
 
     links: `
-        <a href="https://github.com/eeveevv/CMSC170_FinalProject.git" target="_blank">Code</a>
-        <a href="https://canva.link/vhqm3nkaetpkmc8" target="_blank">Slides 1</a>
-        <a href="https://canva.link/hba0w8kt4syrapw" target="_blank">Slides 2</a>
-        <a href="https://canva.link/ubhmlb5n2a30ivx" target="_blank">Slides 3</a>
+        <a href="https://github.com/eeveevv/CMSC170_FinalProject.git" target="_blank">Github Code</a><br>
+        <a href="https://canva.link/vhqm3nkaetpkmc8" target="_blank">Milestone 1 Slides</a><br>
+        <a href="https://canva.link/hba0w8kt4syrapw" target="_blank">Milestone 2 Slides</a><br>
+        <a href="https://canva.link/ubhmlb5n2a30ivx" target="_blank">Milestone 3 Slides</a>
     `,
 
     abstract: `
-        <p>Food security is a problem in the Philippines, and the affordability of food affects whether households can access adequate diets. Since rice is a staple food for Filipino households, changes in its price can affect household budgets and food access.</p>
-        <p>This project predicts the next month's provincial retail price of regular milled rice using recent price information and time-related features. K-Nearest Neighbors Regression, Ridge Regression, and a Multilayer Perceptron built from scratch were compared against a persistence baseline.</p>
+        <p>Food security is a common problem among Filipino households, mainly due to unaffordability. Among the possible foods that Filipinos can afford, rice is a staple, as it takes up much of their diet. Thus, predicting the next month’s price of rice can help households, local government units (LGUs), and retailers on their budgeting and purchases. This project assesses the ability of different machine learning models to predict the next month’s price of rice.</p>
+        <p>The project uses three different models, k-Nearest Neighbor Regression, Ridge Regression, and Multilayer Perceptron to predict the next month’s price of rice. These models were compared to a baseline persistence model for its prediction. The models were tuned on 2025 data and tested once on January–August 2026. On the test set, the Multilayer Perceptron performed best (MAE ₱1.83/kg, R2 0.748) and was the only model to beat the baseline on every metric. It was followed by the baseline (MAE ₱2.00/kg), Ridge Regression (MAE ₱2.17/kg), and k-Nearest Neighbors (MAE ₱3.03/kg).</p>
     `,
 
     rationale: `
@@ -34,7 +34,7 @@ const CONTENT = {
 
     problem: `
         <p class="callout">
-            <p>Can we predict next month’s retail rice price (₱/kg) in a province from its recent prices, the prices of other food items, and the time of year?</p>
+            <p>Can we predict next month’s retail rice price (₱/kg) in a province from its recent prices, the national price trend, and the time of year?</p>
         </p>
     `,
 
@@ -47,9 +47,9 @@ const CONTENT = {
 
         <h3>K-Nearest Neighbors</h3>
 
-        <p>K-Nearest Neighbor estimates the target variable using a weighted average of the K-Nearest Neighbors.</p>
-        <p>K-Nearest Neighbors fits because the dataset includes records of prices for different provinces of the different months from the previous years. For a new month, it can find past months that looked similar (eg: change in price for non-rice commodities), and predicts the retail price of the milled rice will move the way it did after those months.</p>
-        <p>A previous study predicted which news topics would go viral on Twitter before Twitter declared them viral, 79% of the time, with a 95% true positive rate and 4% false positive rate [7]. Since kernel classifiers, like kNN, predict from similarly labeled history, this supports using neighbor-based methods on our dataset [8].</p>
+        <p>K-Nearest Neighbor estimates the target variable using an average of the K-Nearest Neighbors.</p>
+        <p>K-Nearest Neighbors fits because the dataset includes records of prices for different provinces of the different months from the previous years. For a new month, it can find past months that looked similar (eg., a similar national price, recent price change, and price gap), and predicts the retail price of the milled rice will move the way it did after those months.</p>
+        <p>A previous study predicted which news topics would trend on Twitter before Twitter declared them trending, 79% of the time, with a 95% true positive rate and 4% false positive rate [7]. Since kernel classifiers, like kNN, predict from similarly labeled history, this supports using neighbor-based methods on our dataset [8].</p>
 
         <h3>Ridge Regression</h3>
 
@@ -59,7 +59,7 @@ const CONTENT = {
         <h3>Multilayer Perceptron</h3>
 
         <p>Multilayer Perceptrons is a fundamental model, which uses a series of hidden weights to compute the output variable from the input variables [11].</p>
-        <p>The Multilayer Perceptron is a powerful improvement to the Perceptron, as it can capture non-linear decision boundaries and can be used in regression analysis [8]. The features in this study have varying scales and relationships, which may make it too complex for a regular Perceptron. With Multilayer Perceptrons, complex relationships within data that cannot be described by a linear decision boundary can be learned and used to generate more accurate predictions based on our data.</p>
+        <p>The Multilayer Perceptron is a powerful improvement to the Perceptron, as it can capture non-linear decision boundaries and can be used in regression analysis [11]. The features in this study have varying scales and relationships, which may make it too complex for a regular Perceptron. With Multilayer Perceptrons, complex relationships within data that cannot be described by a linear decision boundary can be learned and used to generate more accurate predictions based on our data.</p>
     `,
 
     setup: `
@@ -82,7 +82,7 @@ const CONTENT = {
 
                     <li>Several features were created:
                         <ol type="i">
-                            <li>Rice price in the current month and the previous 3 months</li>
+                            <li>National average rice price in each of the previous 3 months</li>
                             <li>Last month’s change in the national average rice price</li>
                             <li>Province’s price gap versus the national mean</li>
                             <li>Month</li>
@@ -119,53 +119,79 @@ const CONTENT = {
         </ol>
     `,
 
-    results: `
-        <h3>Validation set</h3>
+    baseline: `
+        <p>Each model was compared against a persistence baseline, which predicts that next month’s price will be the same as the market’s latest observed price. The baseline needs no training or tuning. It was scored on the same validation and test sets with the same metrics.</p>
+    `,
 
-        <p>Table 1 presents the evaluation metrics for each model.</p>
+    eval_metrics: `
+        <p>The models were evaluated with four metrics, shown in Table 1.</p>
+
+        <p><b>Table 1.</b> Evaluation metrics</p>
+
+        <table>
+        <tr><th>Metric</th><th>Unit</th><th>What it tells us</th></tr>
+        <tr><td>Mean Absolute Error (MAE)</td><td>₱/kg</td><td>On average, how far off is the ₱/kg prediction</td></tr>
+        <tr><td>Root Mean Squared Error (RMSE)</td><td>₱/kg</td><td>Similar to MAE, but big misses have a heavier effect</td></tr>
+        <tr><td>Mean Absolute Percentage Error (MAPE)</td><td>%</td><td>The average error as a percentage of the actual price</td></tr>
+        <tr><td>R-squared or Coefficient of Determination (R²)</td><td>none</td><td>The share of the variation in rice prices that the model explains. 1 is perfect, and 0 is no better than always predicting the average price</td></tr>
+        </table>
+
+        <p>We also recorded the time each model took to train and produce its predictions.</p>
+        `,
+
+    results: `
+        <h3>Validation Set</h3>
+
+        <p>Table 2 presents the evaluation metrics for each model on the validation set (2025).</p>
+
+        <p><b>Table 2.</b> Validation set results (2025)</p>
 
         <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
                         <th>Model</th>
-                        <th>Mean Absolute Error (MAE)</th>
-                        <th>Root Mean Squared Error (RMSE)</th>
-                        <th>Mean Absolute Percentage Error (MAPE)</th>
+                        <th>MAE (₱/kg)</th>
+                        <th>RMSE (₱/kg)</th>
+                        <th>MAPE</th>
                         <th>R²</th>
+                        <th>Time (s)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Baseline</td><td>1.1871</td><td>1.8138</td><td>2.8096</td><td>0.8388</td></tr>
-                    <tr><td>Ridge Regression</td><td>1.6819</td><td>2.1646</td><td>4.0171</td><td>0.7704</td></tr>
-                    <tr><td>k-Nearest Neighbor</td><td>2.1280</td><td>2.7559</td><td>5.0160</td><td>0.6278</td></tr>
-                    <tr><td>Multilayer Perceptron</td><td>1.6778</td><td>2.2185</td><td>4.0269</td><td>0.7588</td></tr>
+                    <tr><td>Baseline</td><td>1.1871</td><td>1.8138</td><td>2.8096</td><td>0.8388</td><td>0.0000</td></tr>
+                    <tr><td>Ridge Regression</td><td>1.6819</td><td>2.1646</td><td>4.0171</td><td>0.7704</td><td>0.0010</td></tr>
+                    <tr><td>k-Nearest Neighbor</td><td>2.1280</td><td>2.7559</td><td>5.0160</td><td>0.6278</td><td>2.4212</td></tr>
+                    <tr><td>Multilayer Perceptron</td><td>1.6778</td><td>2.2185</td><td>4.0269</td><td>0.7588</td><td>0.0045</td></tr>
                 </tbody>
             </table>
         </div>
 
         <p>The baseline model performs the best on the validation set, with the lowest MAE (1.1871), RMSE (1.8138), and MAPE (2.8096%) and the highest R² (0.8388). Ridge Regression performs second best, with a better RMSE (2.1646), MAPE (4.0171%), and R² (0.7704) than the Multilayer Perceptron. It is only slightly worse on MAE (1.6819 vs. 1.6778). The Multilayer Perceptron follows closely, with an RMSE of 2.2185, a MAPE of 4.0269%, and an R² of 0.7588. K-Nearest Neighbors performs the worst, with an MAE of 2.1280, RMSE of 2.7559, MAPE of 5.0160%, and R² of 0.6278.</p>
 
-        <h3>Test set</h3>
+        <h3>Test Set</h3>
 
-        <p>Table 2 presents the evaluation metrics for each model.</p>
+        <p>Table 3 presents the evaluation metrics for each model on the test set (January–August 2026).</p>
+
+        <p><b>Table 3.</b> Test set results (January–August 2026)</p>
 
         <div class="table-wrap">
             <table>
                 <thead>
                     <tr>
                         <th>Model</th>
-                        <th>Mean Absolute Error (MAE)</th>
-                        <th>Root Mean Squared Error (RMSE)</th>
-                        <th>Mean Absolute Percentage Error (MAPE)</th>
+                        <th>MAE (₱/kg)</th>
+                        <th>RMSE (₱/kg)</th>
+                        <th>MAPE</th>
                         <th>R²</th>
+                        <th>Time (s)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Baseline</td><td>2.0003</td><td>2.9083</td><td>4.4154</td><td>0.6446</td></tr>
-                    <tr><td>Ridge Regression</td><td>2.1664</td><td>2.7760</td><td>4.8400</td><td>0.6762</td></tr>
-                    <tr><td>k-Nearest Neighbor</td><td>3.0288</td><td>4.1244</td><td>6.8626</td><td>0.2853</td></tr>
-                    <tr><td>Multilayer Perceptron</td><td>1.8333</td><td>2.4479</td><td>4.0325</td><td>0.7482</td></tr>
+                    <tr><td>Baseline</td><td>2.0003</td><td>2.9083</td><td>4.4154</td><td>0.6446</td><td>0.0000</td></tr>
+                    <tr><td>Ridge Regression</td><td>2.1664</td><td>2.7760</td><td>4.8400</td><td>0.6762</td><td>0.0010</td></tr>
+                    <tr><td>k-Nearest Neighbor</td><td>3.0288</td><td>4.1244</td><td>6.8626</td><td>0.2853</td><td>1.6631</td></tr>
+                    <tr><td>Multilayer Perceptron</td><td>1.8333</td><td>2.4479</td><td>4.0325</td><td>0.7482</td><td>0.0091</td></tr>
                 </tbody>
             </table>
         </div>
@@ -174,13 +200,13 @@ const CONTENT = {
     `,
 
     discussion: `
-        <p>The baseline model performed well on the validation data, but performed worse in the test dataset. This can be attributed to the data in the validation dataset having less fluctuation in prices across months, and thus using the previous month for predicting the current month’s prices will result in a better performance. However, it is possible that there is a large fluctuation in the price of rice in the test dataset, and thus using the previous month’s prices for predicting the current month’s prices will not be as accurate.</p>
+        <p>The baseline model performed well on the validation data, but performed worse in the test dataset. This can be attributed to the data in the validation dataset having less fluctuation in prices across months, and thus using the previous month for predicting the current month’s prices will result in a better performance. However, it is possible that there is a large fluctuation in the price of rice in the test dataset, and thus using the previous month for predicting the current month’s prices will not be as accurate.</p>
 
-        <p>The k-nearest neighbors performed badly on the dataset both in the validation and test metrics. This may be due to the features being structured in a way that similar data points in terms of features do not have a similar price.</p>
+        <p>The k-Nearest Neighbors performed badly on the dataset both in the validation and test sets. This may be due to the features being structured in a way that similar data points in terms of features do not have a similar price. In addition, since kNN predicts an average of past prices, it cannot predict prices higher than those in the training data.</p>
 
-        <p>The Ridge Regression performed well on the dataset in the validation, but performed slightly worse on the test metrics. This may be due to the fact that the relationship between the features and the output variables are easily defined linearly, especially in the validation phase. However, some relationships between the features and output variables were not as easily defined linearly as seen in its performance on the test data, possibly due to an external force that is not accounted for in the model.</p>
+        <p>The Ridge Regression performed well on the validation set, but performed slightly worse on the test set. This may be because the relationship between the features and the output variables is easily defined linearly, especially in the validation phase. However, some relationships between the features and output variables were not as easily defined linearly as seen in its performance on the test data, possibly due to an external force that is not accounted for in the model, such as the sudden rise in the prices in early 2026.</p>
 
-        <p>The Multilayer Perceptron performed well on the dataset in the validation and test metrics. This can be explained by the possible nonlinear relationship between the features and the predicted variables.</p>
+        <p>The Multilayer Perceptron performed well on the dataset in the validation and test metrics. This can be explained by the possible nonlinear relationship between the features and the predicted variables. Its error rose only slightly from validation to test (MAE 1.68 to 1.83), while the other models’ errors rose more, which suggests it adapted better to the change in the price trend.</p>
     `,
 
     conclusion: `
@@ -201,7 +227,13 @@ const CONTENT = {
 
             <li>World Food Programme, “Philippines – Food Prices,” Humanitarian Data Exchange. Accessed: Oct. 27, 2026. [Online]. Available: <a href="https://data.humdata.org/dataset/wfp-food-prices-for-philippines" target="_blank">https://data.humdata.org/dataset/wfp-food-prices-for-philippines</a></li>
 
+            <li>S. Nikolov and D. Shah, “A nonparametric method for early detection of trending topics,” presented at the Interdisciplinary Workshop on Information and Decision in Social Networks, 2012.</li>
+
+            <li>G. H. Chen and D. Shah, “Explaining the Success of Nearest Neighbor Methods in Prediction,” <em>Foundations and Trends in Machine Learning</em>, vol. 10, no. 5–6, pp. 337–588, May 2018, doi: 10.1561/2200000064.</li>
+
             <li>J. Murel and E. Kavlakoglu, “What is ridge regression?,” IBM, Sep. 21, 2023. [Online]. Available: <a href="https://www.ibm.com/think/topics/ridge-regression" target="_blank">https://www.ibm.com/think/topics/ridge-regression</a></li>
+
+            <li>T. Hastie, R. Tibshirani, and J. Friedman, <em>The Elements of Statistical Learning: Data Mining, Inference, and Prediction</em>, 2nd ed. New York, NY, USA: Springer, 2009, sec. 3.4.1.</li>
 
             <li>D. Saini, “Deep Learning Specialization: Understanding Multi-Layer Perceptron (MLP) Inside Out,” Medium, Aug. 31, 2025. <a href="https://medium.com/data-science-collective/deep-learning-specialization-understanding-multi-layer-perceptron-mlp-inside-out-f3ff465a521f" target="_blank">https://medium.com/data-science-collective/deep-learning-specialization-understanding-multi-layer-perceptron-mlp-inside-out-f3ff465a521f</a> (accessed Oct. 27, 2026).</li>
 
@@ -210,17 +242,4 @@ const CONTENT = {
     disclosure: `
         <p>All models and evaluation metrics were implemented from scratch using only NumPy, Matplotlib, and the Python standard library, without any machine learning libraries. The online sources we learned from are cited in the References and in the code comments. We also used Claude (Anthropic) to explain concepts and review our code and reports. All AI-assisted code and text were checked, run, and edited by the group, and all reported results come from running our own code.</p>
     `,
-
-    repo: `
-        <p><strong>GitHub Repository:</strong>
-        <a href="https://github.com/eeveevv/CMSC170_FinalProject.git" target="_blank">CMSC170_FinalProject</a></p>
-
-        <p><strong>Project Slides:</strong></p>
-
-        <ul>
-            <li><a href="https://canva.link/vhqm3nkaetpkmc8" target="_blank">Slides 1</a></li>
-            <li><a href="https://canva.link/hba0w8kt4syrapw" target="_blank">Slides 2</a></li>
-            <li><a href="https://canva.link/ubhmlb5n2a30ivx" target="_blank">Slides 3</a></li>
-        </ul>
-    `
 };
