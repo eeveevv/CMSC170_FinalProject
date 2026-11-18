@@ -1,97 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>kAInan Project Page</title>
-<style>
-    body { max-width: 900px; margin: 0 auto; padding: 0 16px 40px; text-align: center; font-family: Helvetica, Arial, sans-serif; line-height: 1.5; }
-    table { margin: 12px auto; border-collapse: collapse; }
-    th, td { border: 1px solid #999; padding: 6px 10px; }
-    ul, ol { list-style-position: inside; padding: 0; }
-    img { max-width: 100%; }
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>kAInan Project Page</title>
+
+    <style>
+        body {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 16px 40px;
+            text-align: center;
+            font-family: Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        table {
+            margin: 12px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #999;
+            padding: 6px 10px;
+        }
+
+        ul, ol {
+            list-style-position: outside;
+            padding-left: 40px;
+            text-align: left;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        figure {
+            margin: 16px 0;
+        }
+
+        figcaption {
+            font-size: 0.9em;
+            color: #444;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        #setup ol ol,
+        #setup ol ul {
+        margin-left: 20px;
+}
+    </style>
 </head>
+
 <body>
 
-<!-- Every [data-content="name"] box is filled by script.js using the matching entry in content.js -->
+    <!-- Every [data-content="name"] box is filled by script.js using content.js -->
 
-<!-- 1. Title and group members -->
-<header>
-    <h1 data-content="title"></h1>
-    <div data-content="members"></div>
-    <div data-content="links"></div>
-</header>
-<hr>
+    <!-- 1. Title and group members -->
+    <header>
+        <h1 data-content="title"></h1>
+        <div data-content="members"></div>
+    </header>
 
-<section id="problem">
-    <h2>Problem Statement and Motivation</h2>
-    <div data-content="problem"></div>
-</section>
-<hr>
+    <hr>
 
-<section id="dataset">
-    <h2>Dataset</h2>
-    <div data-content="dataset"></div>
-</section>
-<hr>
+    <section id="abstract">
+        <h2>Abstract (TL;DR)</h2>
+        <div data-content="abstract"></div>
+    </section>
 
-<section id="methods">
-    <h2>Methods</h2>
-    <div data-content="methods"></div>
-</section>
-<hr>
+    <hr>
 
-<section id="setup">
-    <h2>Experimental Setup</h2>
-    <div data-content="setup"></div>
-</section>
-<hr>
+    <section id="rationale">
+        <h2>Rationale</h2>
+        <div data-content="rationale"></div>
+    </section>
 
-<section id="results">
-    <h2>Results</h2>
-    <div data-content="results"></div>
+    <hr>
 
-    <h3>Validation set</h3>
-    <!-- loaded from assets/results_val.html written by comparison py  -->
-    <div data-include="assets/results_val.html"></div>
+    <section id="problem">
+        <h2>Problem Statement</h2>
+        <div data-content="problem"></div>
+    </section>
 
-    <h3>Test set</h3>
-    <!-- loaded from assets/results_test.html written by comparison py -->
-    <div data-include="assets/results_test.html"></div>
+    <hr>
 
-    <h3>Figures</h3>
-    <!-- loaded from assets/*_test.png written by comparison py-->
-    <div data-figures="assets/error_bars_test.png|MAE and RMSE per method,assets/pred_vs_actual_test.png|Predicted vs actual price,assets/error_by_month_test.png|Average error by month"></div>
-</section>
-<hr>
+    <section id="dataset">
+        <h2>Dataset</h2>
+        <div data-content="dataset"></div>
+    </section>
 
-<section id="discussion">
-    <h2>Discussion</h2>
-    <div data-content="discussion"></div>
-</section>
-<hr>
+    <hr>
 
-<section id="conclusion">
-    <h2>Conclusion</h2>
-    <div data-content="conclusion"></div>
-</section>
-<hr>
+    <section id="methods">
+        <h2>Methods</h2>
+        <div data-content="methods"></div>
+    </section>
 
-<section id="references">
-    <h2>References</h2>
-    <div data-content="references"></div>
-    <h3>Code and AI Tool Disclosure</h3>
-    <div data-content="disclosure"></div>
-</section>
-<hr>
+    <hr>
 
-<section id="repo">
-    <h2>Repository and Slides</h2>
-    <div data-content="repo"></div>
-</section>
+    <section id="setup" class="left">
+        <h2>Experimental Setup</h2>
+        <div data-content="setup"></div>
 
-<script src="content.js"></script>
-<script src="script.js"></script>
+        <h3>Baseline</h3>
+        <div data-content="baseline"></div>
+    </section>
+
+    <hr>
+
+    <section id="evaluation-metrics">
+        <h2>Evaluation Metrics</h2>
+        <div data-content="eval_metrics"></div>
+    </section>
+
+    <hr>
+
+    <section id="results">
+        <h2>Results</h2>
+        <div data-content="results"></div>
+
+        <h3>Figures</h3>
+        <h4>Price trend</h4>
+        <div data-figures="assets/price_trend.png|Average retail price of regular milled rice, 52 provinces"></div>
+
+        <h4>Validation set</h4>
+        <div data-figures="assets/error_bars_val.png|MAE and RMSE per method (validation);assets/pred_vs_actual_val.png|Predicted vs actual price per method (validation; red line = perfect prediction)"></div>
+
+        <h4>Test set</h4>
+        <div data-figures="assets/error_bars_test.png|MAE and RMSE per method (test);assets/pred_vs_actual_test.png|Predicted vs actual price per method (test; red line = perfect prediction)"></div>
+    </section>
+
+    <hr>
+
+    <section id="discussion">
+        <h2>Discussion</h2>
+        <div data-content="discussion"></div>
+    </section>
+
+    <hr>
+
+    <section id="conclusion">
+        <h2>Conclusion</h2>
+        <div data-content="conclusion"></div>
+    </section>
+
+    <hr>
+
+    <section id="references" class="left">
+        <h2>References</h2>
+        <div data-content="references"></div>
+
+    </section>
+        <hr>
+        <h2>Code and AI Tool Disclosure</h2>
+        <div data-content="disclosure"></div>
+        <hr>
+
+        <h2>Repository and Slides</h2>
+        <div data-content="links"></div>
+    <hr>
+
+    <script src="content.js"></script>
+    <script src="script.js"></script>
+
 </body>
 </html>

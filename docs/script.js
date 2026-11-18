@@ -1,4 +1,4 @@
-// 1. display the content from content.js
+// 1. Display the content from content.js
 var boxes = document.querySelectorAll('[data-content]');
 
 for (var i = 0; i < boxes.length; i++) {
@@ -10,32 +10,14 @@ for (var i = 0; i < boxes.length; i++) {
     }
 }
 
-// 2. load the result tables
-var tables = document.querySelectorAll('[data-include]');
-for (var i = 0; i < tables.length; i++) {
-    var box = tables[i];
 
-    fetch(box.dataset.include)
-        .then(function(response) {
-            if (!response.ok) {
-                throw new Error(response.status);
-            }
-            return response.text();
-        })
-        .then(function(html) {
-            box.innerHTML = html;
-        })
-        .catch(function() {
-            box.textContent = 'Not available yet. Run Comparison.py first.';
-        });
-}
+// 2. Display the figures
 
-// 3. display the figures
 var figures = document.querySelectorAll('[data-figures]');
 
 for (var i = 0; i < figures.length; i++) {
     var box = figures[i];
-    var items = box.dataset.figures.split(',');
+    var items = box.dataset.figures.split(';');
 
     for (var j = 0; j < items.length; j++) {
         var parts = items[j].split('|');

@@ -4,8 +4,8 @@ import numpy as np
 
 import EvaluationMetrics as em
 
-P_VALUE = 1
-K_MIN = 5
+P_VALUE = 2
+K_MIN = 3
 K_MAX = 56
  
 TRAIN_PATH = "../dataset/processed_train.csv"
@@ -103,29 +103,20 @@ def get_distance(item):
     return item[0]
  
  
-def compute_closest_matches(test_x, train_x, train_y, k):
+def compute_closest_matches(test_x, train_x, train_y, k, p=P_VALUE):
     closest_matches = []
- 
-    # loop through each test case
     for i in range(len(test_x)):
         distances = []
- 
-        # loop through each train case
         for j in range(len(train_x)):
- 
-            # Minkowski distance (Euclidean)
             total = 0
             for col in range(6):
-                total += abs(test_x[i][col] - train_x[j][col]) ** P_VALUE
-            distance = total ** (1 / P_VALUE)
- 
+                total += abs(test_x[i][col] - train_x[j][col]) ** p
+            distance = total ** (1 / p)
             distances.append((distance, train_y[j]))
- 
-        # sort the instances, then keep the K closest
         distances.sort(key=get_distance)
         closest_matches.append(distances[:k])
- 
     return closest_matches
+
  
  
 def predict(closest_matches, k):
@@ -140,19 +131,17 @@ def predict(closest_matches, k):
  
     return predictions
 
-def run(train_x, train_y, test_x):
+def run(train_x, train_y, test_x, k=7, p=2):   # defaults = your best K and P
     train_x = np.asarray(train_x, dtype=float).tolist()
     train_y = np.asarray(train_y, dtype=float).tolist()
-    tune_x = np.asarray(train_x, dtype=float).tolist()
-
-    k = compute_K(train_x)
+    test_x = np.asarray(test_x, dtype=float).tolist()
 
     means, stds = compute_scaling(train_x)
     train_x = scale(train_x, means, stds)
     test_x = scale(test_x, means, stds)
 
-    closest = compute_closest_matches(test_x, train_x, train_y, k)
-    return np.array(predict(closest,k))
+    closest = compute_closest_matches(test_x, train_x, train_y, k, p)
+    return np.array(predict(closest, k))
 
 def main():
     train = reader(TRAIN_PATH)
