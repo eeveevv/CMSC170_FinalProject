@@ -4,67 +4,27 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>kAInan Project Page</title>
-
-    <style>
-        body {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 16px 40px;
-            text-align: center;
-            font-family: Helvetica, Arial, sans-serif;
-            line-height: 1.5;
-        }
-
-        table {
-            margin: 12px auto;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #999;
-            padding: 6px 10px;
-        }
-
-        ul, ol {
-            list-style-position: outside;
-            padding-left: 40px;
-            text-align: left;
-        }
-
-        img {
-            max-width: 100%;
-        }
-
-        .left {
-            text-align: left;
-        }
-
-        figure {
-            margin: 16px 0;
-        }
-
-        figcaption {
-            font-size: 0.9em;
-            color: #444;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        #setup ol ol,
-        #setup ol ul {
-        margin-left: 20px;
-}
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
+<div class="page">
+
+    <nav class="nav">
+        <a class="nav-brand" href="#top"><img src="assets/logo.png" alt="">kAInan</a>
+        <ul class="nav-links">
+            <li><a href="#abstract">Abstract</a></li>
+            <li><a href="#dataset">Dataset</a></li>
+            <li><a href="#methods">Methods</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+    </nav>
 
     <!-- Every [data-content="name"] box is filled by script.js using content.js -->
 
     <!-- 1. Title and group members -->
-    <header>
+    <header id="top">
         <h1 data-content="title"></h1>
         <div data-content="members"></div>
     </header>
@@ -167,6 +127,8 @@
         <h2>Repository and Slides</h2>
         <div data-content="links"></div>
     <hr>
+
+</div>
 
     <script src="content.js"></script>
     <script src="script.js"></script>
